@@ -29,77 +29,80 @@ int input_line(char **line, int *size)
 
 void process_line(char **line, int size)
 {
-    char *source, *dest, *words[40], *tok;
+    char *source, *result, *words[40], *token;
     int i, j;
-    int m, n, k, l, r, ll, destsize = 3; /*назови нормально*/
+    int char_quantity;
+    int word_quantity;
+    int spaces, common_spaces, extra_spaces;
+    int token_length;
+    int result_length = 3;
 
-    source = *line; /*зачем?*/
-    dest = calloc(destsize, sizeof(char));
-    tok = strtok(source, " \t");
-    n = 1;
-    m = strlen(tok);
-    words[0] = tok;
-    while (tok = strtok(NULL, " \t"))
+    source = *line; /*зачем? почему нельзя работать с line?*/
+    result = calloc(result_length, sizeof(char));
+    token = strtok(source, " \t");
+    word_quantity = 1;
+    char_quantity = strlen(token);
+    words[0] = token;
+    while (token = strtok(NULL, " \t"))
     {
-        ll = strlen(tok);
-        m += ll;
-        if (m >= 80 - n)
+        token_length = strlen(token);
+        char_quantity += token_length;
+        if (char_quantity >= 80 - word_quantity)
         {
-            m -= ll;
-            destsize += 83;
-            dest = realloc(dest, destsize * sizeof(char));
-            k = 80 - m;
-            l = k / (n - 1);
-            r = k % (n - 1);
-            for (i = 0; i < n; i++)
+            char_quantity -= token_length;
+            result_length += 83;
+            result = realloc(result, result_length * sizeof(char));
+            spaces = 80 - char_quantity;
+            common_spaces = spaces / (word_quantity - 1);
+            extra_spaces = spaces % (word_quantity - 1);
+            for (i = 0; i < word_quantity; i++)
             {
-                strcat(dest, words[i]);
-                if (i < n - 1)
+                strcat(result, words[i]);
+                if (i < word_quantity - 1)
                 {
-                    for (j = 0; j < (i >= r ? l : l + 1); j++)
+                    for (j = 0; j < (i >= extra_spaces ? common_spaces : common_spaces + 1); j++)
                     {
-                        strcat(dest, " ");
+                        strcat(result, " ");
                     }
                 }
             }
-            n = 1;
-            m = strlen(tok);
-            words[0] = tok;
+            word_quantity = 1;
+            char_quantity = strlen(token);
+            words[0] = token;
         }
         else
         {
-            words[n++] = tok;
+            words[word_quantity++] = token;
         }
     }
-    if (m + n < 80)
+    if (char_quantity + word_quantity < 80)
     {
-        destsize += 82;
-        dest = realloc(dest, destsize * sizeof(char));
-        k = 80 - m;
-        if (n > 1)
+        result_length += 82;
+        result = realloc(result, result_length * sizeof(char));
+        spaces = 80 - char_quantity;
+        if (word_quantity > 1)
         {
-            l = k / (n - 1);
-            r = k % (n - 1);
-            for (i = 0; i < n; i++)
+            common_spaces = spaces / (word_quantity - 1);
+            extra_spaces = spaces % (word_quantity - 1);
+            for (i = 0; i < word_quantity; i++)
             {
-                strcat(dest, words[i]);
-                if (i < n - 1)
+                strcat(result, words[i]);
+                if (i < word_quantity - 1)
                 {
-                    for (j = 0; j < (i >= r ? l : l + 1); j++)
+                    for (j = 0; j < (i >= extra_spaces ? common_spaces : common_spaces + 1); j++)
                     {
-                        strcat(dest, " ");
+                        strcat(result, " ");
                     }
                 }
             }
         }
         else
         {
-            strcat(dest, words[0]);
-            /*strcat(dest, "\n"); нахуя, если вывод в print_line?*/
+            strcat(result, words[0]);
         }
     }
     free(source);
-    *line = dest;
+    *line = result;
 }
 
 void print_line(char *line)
@@ -114,7 +117,8 @@ int main()
     int size;
     for (;;)
     {
-        if (input_line(&buf, &size)) break;
+        if (input_line(&buf, &size))
+            break;
         process_line(&buf, size);
         print_line(buf);
     }
