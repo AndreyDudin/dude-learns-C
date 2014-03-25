@@ -32,8 +32,9 @@ int input_line(char **line, int *size)
 
 void process_line(char *line, int size)
 { char *words[40], *dest, *source;
-	int len=0,spaces,pr=0;
-	int i,j=0;
+	int len=0,spaces,pr=0,common_spaces,extra_spaces,;
+	int i,j=0,word_qu;
+	dest=calloc(81,sizeof(char));
 	while(*line++){
 		if(*line='\t')
 			++pr;
@@ -42,24 +43,34 @@ void process_line(char *line, int size)
 	line-=len;
 	spaces=80-len+pr;
 	*line=0;
-	for(i=0;i<len,i++;){
-		if(*line=='\t')
-			while(*(line+=i)=='\t'){
-				line-=i;
-				i+=1;
-			}
+	while(*line!='\0'){
+			while(*(line+=1)=='\t')
 			words[j]=line;
 			while(*line++!='\t'){
-				*words[j]++=*line;
-				i+=1;
-			}
-
-
-
-
-	
-		
+				*++words[j]=*line;
+				}
+			j+=1;
 	}
+	word_qu==j;
+
+	common_spaces=spaces/(j-1);
+	extra_spaces=spaces%(j-1);
+	j=0;
+	while(j<word_qu){
+		for(i=0;i<common_spaces;i++)
+			*++words[j]=' ';
+		++j;
+
+
+	}
+	j=0;
+	while(j<extra_spaces){
+		*++words[j]=' ';
+		++j;
+	}
+
+
+
 
 	
 }
