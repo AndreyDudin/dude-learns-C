@@ -1,7 +1,12 @@
 #include <stdio.h>
 
 #include <stdlib.h>
-
+int str_len(char *line){
+	int i;
+	while(*line++!='\0')
+		++i;
+	return i;
+}
 
 
 
@@ -9,7 +14,6 @@ int input_line(char **line, int *size)
 {
 	char *buf, *last;
 	int rets;
-
 	*size = 81;
 	buf = (char*)calloc(*size, sizeof(char));
 	scanf("%80[^\n]%n", buf, &rets);
@@ -30,13 +34,13 @@ int input_line(char **line, int *size)
 	return 0;
 }
 
-void process_line(char *line, int size)
-{ char *words[40], *dest, *source;
-	int len=0,spaces,pr=0,common_spaces,extra_spaces,;
+void process_line(char **line, int *size)
+{ char *words[40], *dest;
+	int len=0,spaces,pr=0,common_spaces,extra_spaces;
 	int i,j=0,word_qu;
-	dest=calloc(81,sizeof(char));
+	dest=calloc(82,sizeof(char));
 	while(*line++){
-		if(*line='\t')
+		if((*line=='\t')||(*line==' '))
 			++pr;
 		++len;
 	}
@@ -44,14 +48,14 @@ void process_line(char *line, int size)
 	spaces=80-len+pr;
 	*line=0;
 	while(*line!='\0'){
-			while(*(line+=1)=='\t')
+			while((*++line=='\t')||(*++line==' '))
 			words[j]=line;
-			while(*line++!='\t'){
+			while((*line++!='\t')||(*line++!=' ')){
 				*++words[j]=*line;
 				}
 			j+=1;
 	}
-	word_qu==j;
+	word_qu=j;
 
 	common_spaces=spaces/(j-1);
 	extra_spaces=spaces%(j-1);
@@ -66,12 +70,16 @@ void process_line(char *line, int size)
 	j=0;
 	while(j<extra_spaces){
 		*++words[j]=' ';
+		words[j]-=str_len(words[j]);
 		++j;
 	}
-
-
-
-
+	while(j<word_qu){
+		while(*dest++=*words[j]++);
+		++j;
+		
+	}
+	dest-=str_len(dest);
+	*line=dest;
 	
 }
 
