@@ -12,7 +12,7 @@ int str_len(char *string)
     return length;
 }
 
-/*сливает две строки в одну*/
+/*Сливает две строки в одну*/
 char *str_cat(char *dest, const char *source)
 {
     char *s1 = dest;
@@ -55,13 +55,13 @@ char *add_spaces(char *string, int count)
     return string;
 }
 
-/*Подсчитывает количество пробелов в строке*/
+/*Подсчитывает количество пробелов и знаков табуляции в строке*/
 int count_spaces(char *string)
 {
     int spaces = 0;
     while (*string != '\0')
     {
-        if (*string == ' ')
+        if (*string == ' ' || *string == '\t')
         {
             spaces++;
         }
@@ -100,7 +100,6 @@ void process_line(char **source, int *size)
     char *line = *source;
     char *words[40];
     char *dest = (char *)calloc(82, sizeof(char));
-    char *dest_l = dest;
     int length = str_len(line);
     int pr = count_spaces(line);
     int spaces;
@@ -111,12 +110,12 @@ void process_line(char **source, int *size)
 
     while (*line != '\0')
     {
-        while (*line == ' ')
+        while (*line == ' ' || *line == '\t')
         {
             line++;
         }
         words[word_qu] = line;
-        while (*line != ' ' && *line != '\0')
+        while (*line != ' ' && *line != '\t' && *line != '\0')
         {
             line++;
         }
@@ -127,7 +126,7 @@ void process_line(char **source, int *size)
 
     common_spaces = spaces / (word_qu - 1);
     extra_spaces = spaces % (word_qu - 1);
-    j = 0;
+
     for (j = 0; j < word_qu - 1; j++)
     {
         str_cat(dest, words[j]);
@@ -143,7 +142,7 @@ void process_line(char **source, int *size)
     str_cat(dest, words[word_qu - 1]);
     free (*source);
 
-    *source = dest_l;
+    *source = dest;
 }
 
 
