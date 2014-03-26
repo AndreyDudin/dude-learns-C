@@ -99,14 +99,13 @@ void process_line(char **source, int *size)
     int i, j;
     char *line = *source;
     char *words[40];
-    char *dest = (char *)calloc(82, sizeof(char));
+    char *dest = (char *)calloc(81, sizeof(char));
     int length = str_len(line);
     int pr = count_spaces(line);
-    int spaces;
+    int spaces = 80 - length + pr;
     int common_spaces;
     int extra_spaces;
     int word_qu = 0;
-    spaces = 80 - length + pr;
 
     while (*line != '\0')
     {
@@ -130,7 +129,7 @@ void process_line(char **source, int *size)
     for (j = 0; j < word_qu - 1; j++)
     {
         str_cat(dest, words[j]);
-        if (j <= extra_spaces)
+        if (j < extra_spaces)
         {
             add_spaces(dest, common_spaces + 1);
         }
@@ -140,7 +139,7 @@ void process_line(char **source, int *size)
         }
     }
     str_cat(dest, words[word_qu - 1]);
-    free (*source);
+    free(*source);
 
     *source = dest;
 }
