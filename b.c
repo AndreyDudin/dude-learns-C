@@ -1,7 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/*Вычисляет длину строки*/
+int str_len(char *);
+char *str_cat(char *, const char *);
+char *add_spaces(char *, int);
+int count_spaces(char *);
+
+int input_line(char **);
+void process_line(char **);
+void print_line(char *);
+
+int main()
+{
+    char *buf;
+    for (;;)
+    {
+        if (input_line(&buf))
+            break;
+        process_line(&buf);
+        print_line(buf);
+    }
+    return 0;
+}
+
 int str_len(char *string)
 {
     int length = 0;
@@ -12,7 +33,6 @@ int str_len(char *string)
     return length;
 }
 
-/*Сливает две строки в одну*/
 char *str_cat(char *dest, const char *source)
 {
     char *s1 = dest;
@@ -35,7 +55,6 @@ char *str_cat(char *dest, const char *source)
     return dest;
 }
 
-/*Добавляет нужное число пробелов в конец*/
 char *add_spaces(char *string, int count)
 {
     char *s = string;
@@ -55,7 +74,6 @@ char *add_spaces(char *string, int count)
     return string;
 }
 
-/*Подсчитывает количество пробелов и знаков табуляции в строке*/
 int count_spaces(char *string)
 {
     int spaces = 0;
@@ -70,12 +88,12 @@ int count_spaces(char *string)
     return spaces;
 }
 
-int input_line(char **line, int *size)
+int input_line(char **line)
 {
     char *buf, *last;
     int rets;
-    *size = 81;
-    buf = (char *)calloc(*size, sizeof(char));
+    int size = 81;
+    buf = (char *)calloc(size, sizeof(char));
     scanf("%80[^\n]%n", buf, &rets);
     if (feof(stdin))
     {
@@ -84,9 +102,9 @@ int input_line(char **line, int *size)
     }
     while (rets > 79)
     {
-        last = &(buf[*size - 1]);
-        *size += 80;
-        buf = (char *)realloc(buf, *size * sizeof(char));
+        last = &(buf[size - 1]);
+        size += 80;
+        buf = (char *)realloc(buf, size * sizeof(char));
         scanf("%80[^\n]%n", last, &rets);
     }
     fflush(stdin);
@@ -94,7 +112,7 @@ int input_line(char **line, int *size)
     return 0;
 }
 
-void process_line(char **source, int *size)
+void process_line(char **source)
 {
     int i, j;
     char *line = *source;
@@ -150,18 +168,4 @@ void print_line(char *line)
 {
     printf("%s\n", line);
     free(line);
-}
-
-int main()
-{
-    char *buf;
-    int size;
-    for (;;)
-    {
-        if (input_line(&buf, &size))
-            break;
-        process_line(&buf, &size);
-        print_line(buf);
-    }
-    return 0;
 }
