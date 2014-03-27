@@ -10,152 +10,109 @@ typedef struct node
 
 typedef node *list_t;
 
-list_t create_list (const char *);
-void print_list (list_t list);
-int line_size(list_t list);
-int word_quantity(list_t list);
-int spaces_qua(list_t list);
-void process_line(list_t list);
-
+list_t create_list(const char *);
+void print_list(list_t);
+int str_len(list_t);
+int count_words(list_t);
+list_t process_line(list_t);
+list_t add_spaces(list_t, int);
 
 int main()
 {
     char buf[81];
     list_t list;
-    scanf("%80[^\n]", buf);
-    fflush(stdin);
-    list = create_list(buf);
-    process_line(list);
-
-    print_list(list);
+    for (;;)
+    {
+        scanf("%80[^\n]", buf);
+        fflush(stdin);
+        list = create_list(buf);
+        list = process_line(list);
+        print_list(list);
+    }
     return 0;
-
 }
 
-void process_line(list_t list)
+list_t process_line(list_t list)
 {
-    list_t space;
-    list_t head;
-    list_t first;
-    list_t l_word;
-    list_t cur;
-    int spaces_in_begin, len, spaces_qu, common_spaces, extra_spaces;
+    int processed_words = 0;
+    int words = count_words(list);
+    int length = str_len(list);
+    int common_spaces = (80 - length + words - 1) / (words - 1);
+    int extra_spaces = (80 - length + words - 1) % (words - 1);
+    list_t current = list;
 
-    int wrd, j, i;
-
-    spaces_in_begin = spaces_quantity(list);
-    len = line_size(list);
-    wrd = word_quantity(list);
-    spaces_qu = 80 - len + spaces_in_begin;
-    common_spaces = spaces_qu / (wrd - 1);
-    extra_spaces = spaces_qu % (wrd - 1);
-
-    j = 0;
-    while (list->data == ' ' && list != NULL)
+    while (current != NULL)
     {
-        first = list;
-        list = list->next;
-        free(first);
-    }
-    cur = list;
-
-
-    while (cur != NULL)
-    {
-
-        while (cur->data != ' ' && cur->data != 0)
+        if (current->data == ' ')
         {
-            l_word = cur;
-            cur = cur->next;
-        }
-        j++;
-        if (j < wrd)
-        {
-
-
-            for (i = 0; i < common_spaces; i++)
+            if (processed_words < extra_spaces)
             {
-                l_word->next = (node *)malloc(sizeof(node));
-                l_word = l_word->next;
-                l_word->data = ' ';
+                current = add_spaces(current, common_spaces);
             }
-            if (j < extra_spaces)
+            else
             {
-                l_word->next = (node *)malloc(sizeof(node));
-                l_word = l_word->next;
-                l_word->data = ' ';
+                current = add_spaces(current, common_spaces - 1);
             }
-            l_word = cur;
+            processed_words++; //этой строки не было
         }
-        while (cur->data == ' ' && cur != NULL)
-        {
-            space = cur;
-            cur = cur->next;
-            free(space);
-        }
-
+        current = current->next;
     }
 
+    return list;
 }
 
-list_t create_list (const char *str)
+list_t create_list(const char *str)
 {
-    node head;
+    node head = {' ', NULL};
     node *last = &head;
     while (*str != '\0')
     {
-        last->next = (node *)malloc(sizeof(node));
-        last = last->next;
-        last->data = *str++;
-        last->next = NULL;
-
+        if ((*str == ' ' || *str == '\t') && (last->data == ' ' || last->data == '\t' || *(str + 1) == '\0'))
+        {
+            str++;
+        }
+        else
+        {
+            last->next = (node *)malloc(sizeof(node));
+            last = last->next;
+            if (*str == '\t')
+            {
+                last->data = ' ';
+            }
+            else
+            {
+                last->data = *str++;
+            }
+            last->next = NULL;
+        }
     }
     return head.next;
 }
 
-
-
-int line_size(list_t list)
+int str_len(list_t list)
 {
     int length = 0;
-    while (list != NULL)
+    for (; list != NULL; list = list->next)
     {
         length++;
-        list = list->next;
     }
     return length;
 }
 
-int word_quantity(list_t list)
+int count_words(list_t list)
 {
-   int wrd=0;
-   while(list != NULL)
-   {
-   		if ((list->data!=' ' && list==NULL) || (list->data!=' ' && (list->next->data==' '))
-   		{
-   			wrd++;
-   		}
-   		list=list->next;
-   }
-}
-
-int spaces_quantity(list_t list)
-{
-    int sp = 0;
-    while (list != NULL)
+    int words = 0;
+    for (; list != NULL; list = list->next)
     {
-        if (list -> data == ' ')
+        if (list->data != ' ' && (list->next == NULL || list->next->data == ' '))
         {
-            sp++;
+            words++;
         }
-        list = list->next;
     }
-    return sp;
-
+    return words;
 }
 
-
-void print_list (list_t list)
+void print_list(list_t list)
 {
     for (; list != NULL; list = list->next)
     {
@@ -164,3 +121,16 @@ void print_list (list_t list)
     printf("\n");
 }
 
+list_t add_spaces(list_t list, int count)
+{
+    int i;
+    for (i = 0; i < count; i++)
+    {
+        list_t temp = (node *)malloc(sizeof(node));
+        temp->data = ' ';
+        temp->next = list->next;
+        list->next = temp;
+        list = temp;
+    }
+    return list;
+}
