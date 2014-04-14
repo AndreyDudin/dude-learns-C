@@ -10,66 +10,55 @@ typedef struct Item
     char *info;
     struct Item *next;
 } Item;
+typedef Item *list;
 
-Item *add_element(Item *head) // по условию элемент вставляется в начало списка
+list add_element(list head, char *inf, int k);
+void search(list head,int k,int version); 
 
+
+
+
+int main()
 {
-    char *str[80];
-    Item *current, *temp, *nxt;
-
-    Item element;
-
-    int k, version;
-
-    printf("Введите ключ нового элемента");
-    scanf("%d", k);
-    printf("Введите информацию");
-    scanf("%80[\n]", str);
-
-    temp = (Item *)malloc(sizeof(Item));
-    temp->key = k;
-    temp->info = *str;
-    current = head;
-
-    while (current->next != NULL) //определяе версию элемента
-    {
-        if (current->key == k)
-        {
-            temp->release = current->release + 1;
-        }
-
-
-    }
-    if (temp->release < 1)
-    {
-        temp->release = 1;
-    }
-
-    if (head->next == NULL) //вставка в начало если голова единственный элемент
-    {
-        head->next = temp;
-        temp->next = NULL;
-    }
-    if (head->next != NULL) //если не единственный
-    {
-        nxt = head->next;
-        head->next = temp;
-        temp->next = nxt;
-    }
-
-
-
-
+    Item head =  NULL;
 }
-void search(Item *head)
-{
-    Item *current = head;
-    int k, version;
-    printf("Введите ключ\n");
-    scanf("%d\n", k);
-    printf("Введите версию, для поиска всех версий введите 999\n");
-    scanf("%d\n", version);
 
+
+
+
+list add_element(list head, char *inf, int k) 
+{
+	list new_head;
+	list current;
+	list new_head=malloc(sizeof(Item));
+	new_head->next=head;
+	new_head->info=inf;
+	new_head->key=k;
+	current=new_head;
+	while( current->next != NULL)
+	{
+		if(current->key==k)
+		{
+			new_head->release=current->release+1;
+			break;
+		}
+
+
+	}
+	if(new_head->release<1)
+	{
+		new_head->release=1;
+	}
+
+	}
+
+
+
+
+void search(list head,int k,int version)
+{
+   	list current;
+   	current=head;
     if (version < 999)
     {
         while (current != 0)
@@ -94,7 +83,3 @@ void search(Item *head)
 }
 
 
-int main()
-{
-    Item head = {0, 0, '\0', NULL};
-}
