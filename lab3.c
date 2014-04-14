@@ -10,27 +10,27 @@ typedef struct Item
     char *info;
     struct Item *next;
 } Item;
-typedef Item *list;
+typedef Item *list_t;
 
-list add_element(list head, char *inf, int k);
-void search(list head,int k,int version); 
+list add_element(list_t head, char *inf, int k);
+void search(list_t head,int k,int version); 
 
 
 
 
 int main()
 {
-    Item head =  NULL;
+    Item list =  NULL;
 }
 
 
 
 
-list add_element(list head, char *inf, int k) 
+list add_element(list_t head, char *inf, int k) 
 {
-	list new_head;
-	list current;
-	list new_head=malloc(sizeof(Item));
+	list_t new_head;
+	list_t current;
+	list_t new_head=malloc(sizeof(Item));
 	new_head->next=head;
 	new_head->info=inf;
 	new_head->key=k;
@@ -55,9 +55,9 @@ list add_element(list head, char *inf, int k)
 
 
 
-void search(list head,int k,int version)
+void search(list_t head,int k,int version)
 {
-   	list current;
+   	list_t current;
    	current=head;
     if (version < 999)
     {
