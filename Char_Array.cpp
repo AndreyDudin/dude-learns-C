@@ -29,7 +29,7 @@ Char_Array::Char_Array(const int n, char **mas)
 
 	
 }
-Char_Array& Char_Array::operator()(const char c)
+/*Char_Array& Char_Array::operator()(const char c)
 {
 	Char_Array ch;
 	ch.amount_of_words = 0;
@@ -48,7 +48,7 @@ Char_Array& Char_Array::operator()(const char c)
 }
 
 
-
+*/
 
 
 
@@ -56,12 +56,15 @@ Char_Array& Char_Array::operator()(const char c)
 Char_Array::~Char_Array()
 {
 }
+
+
 std::ostream& operator<<(std::ostream& os, const Char_Array& ch)
 {
 	for (int i = 0; i < ch.amount_of_words; i++)
 	{
 		os << ch.ar[i] << " ";
 	}
+	return os;
 }
 
 std::istream& operator>>(std::istream& is,  Char_Array& ch)
@@ -75,6 +78,7 @@ std::istream& operator>>(std::istream& is,  Char_Array& ch)
 		if (c == ' ') continue;
 		is.unget();
 	} while (true);
+	return is;
 }
 
 int Char_Array::search(const char* word)
@@ -82,7 +86,7 @@ int Char_Array::search(const char* word)
 
 	for (int i = 0; i < amount_of_words; i++)
 	{
-		if (ar[i] == word)
+		if (strcmp(ar[i],word)==0)
 		{
 			cout << "Position in array= " << i << endl;
 			return i;
@@ -97,12 +101,12 @@ int Char_Array::search(const char* word)
 Char_Array& Char_Array::operator +=(const char *s)
 {
 
-	int qu = amount_of_words;
+//	int qu = amount_of_words;
 	if ((amount_of_words + 1) > MAXAMOUNT)
 	{
 		throw std::exception("Too much words");		
 	}
-	strcpy_s(ar[++amount_of_words],s);
+	strcpy_s(ar[amount_of_words++],s);
 	return *this;
 		
 }
@@ -119,25 +123,43 @@ const char* Char_Array::operator[](int w) const
 }
 
 
-
-
-/*Char_Array Char_Array::sort(Char_Array ch)
+Char_Array& Char_Array::operator () (const char c)
 {
+	Char_Array ch;
+	ch.amount_of_words = 0;
+
 	for (int i = 0; i < amount_of_words; i++)
 	{
+		if (tolower(ar[i][0])==tolower(c))
+		{
+			strcpy_s(ch.ar[amount_of_words], ar[i]);
+			ch.amount_of_words++;
+			
+		}
+	}
+	return ch;
+}
+
+
+
+
+
+void Char_Array::sort()
+{
+	for (int i = 0; i < amount_of_words; i++)
+	{	
 		for (int j = i+1; j < amount_of_words-1; j++)
 		{
 			if (strcmp(ar[i], ar[j]) > 0)
 			{
-				char *temp = new char[MAXLENGTH];
-				strcpy(temp, ar[j]);
-				strcpy(ar[i], ar[j]);
-				strcpy(ar[j], temp);
+				char temp[MAXLENGTH];
+				strcpy_s(temp,ar[i] );
+				strcpy_s(ar[i], ar[j]);
+				strcpy_s(ar[j], temp);
 
 			}
 			
 		}
 	}
-	return *this;
+	return;
 }
-*/

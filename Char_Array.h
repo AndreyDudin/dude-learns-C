@@ -11,16 +11,21 @@ class Char_Array
 
 
 public:
-	int search(const char* word);
 	Char_Array();
 	Char_Array(const char *s);
 	Char_Array(const int n, char** mas);
+	~Char_Array();
+
+	
+	
 	friend std::ostream& operator<<(std::ostream& os, const Char_Array& ch);
 	friend std::istream& operator>>(std::istream& is,  Char_Array& ch);
+
 	Char_Array& operator +=(const char *s);
-	~Char_Array();
 	Char_Array& operator () (const char c);
 	const char* operator [](int) const;
-	Char_Array sort(Char_Array ch);
+
+	void sort();
+	int search(const char* word);
 };
 
