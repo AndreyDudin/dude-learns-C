@@ -1,60 +1,67 @@
 #include "stdafx.h"
 #include "Char_Array.h"
 #include <string.h>
+#include <conio.h>
 #include <stdlib.h>
-#define  maxlength 80;
-#define  maxamount 80;
 #define _CRT_SECURE_NO_WARNINGS
-
 
 Char_Array::Char_Array()
 {
 	amount_of_words = 0;
 }
-Char_Array::Char_Array(const char *s)
-{
-	strcpy_s(ar[0], s);
-	amount_of_words = 1;
-}
 
-Char_Array::Char_Array(const int n, char **mas)
+Char_Array::Char_Array(const Char_Array &ob) :amount_of_words(ob.amount_of_words), ar(NULL)
 {
-	amount_of_words = n;
-	for (int i = 0; i < n; i++)
+	if (amount_of_words > 0)
 	{
-		strcpy_s(ar[i], mas[i]);
-
-	}
-	 
-
-	
-}
-/*Char_Array& Char_Array::operator()(const char c)
-{
-	Char_Array ch;
-	ch.amount_of_words = 0;
-	int n = 0;
-	for (int i = 0; i < amount_of_words; i++)
-	{
-		if (ar[i][0]==c)
-
+		ar = new char*[amount_of_words];
+		for (int i = 0; i < amount_of_words; i++)
 		{
-			ch.amount_of_words++;
-			strcpy_s(ch.ar[n++],ar[i]);
+			ar[i] = new char[strlen(ob.ar[i]) + 1];
+			strcpy(ar[i], ob.ar[i]);
 
 		}
 	}
-	return ch;
+}
+Char_Array::Char_Array(const char *s)
+	:amount_of_words(1)
+	
+{
+	
+	if (strlen(s) > MAXLENGTH)
+	{
+		throw std::exception("Too long word");
+	}
+	ar = new char*[amount_of_words];
+	ar[0] = new char[strlen(s) + 1];
+	strcpy(ar[0], s);
+
 }
 
+Char_Array::Char_Array(const int n, const char** mas)
 
-*/
-
-
-
-
-Char_Array::~Char_Array()
 {
+	/*if (n > MAXAMOUNT)
+	{
+		throw std::exception("Too much words\n");
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		if (strlen(mas[i])>MAXLENGTH)
+		{
+			throw std::exception("Incorrect length of word\n");
+		}
+	}
+	*/
+	amount_of_words = n;
+	ar = new char*[amount_of_words];
+	for (int i = 0; i < n; i++)
+	{
+		ar[i] = new char[strlen(mas[i]) + 1];
+		strcpy(ar[i], mas[i]);
+
+	}
 }
 
 
@@ -67,12 +74,36 @@ std::ostream& operator<<(std::ostream& os, const Char_Array& ch)
 	return os;
 }
 
-std::istream& operator>>(std::istream& is,  Char_Array& ch)
+std::istream& operator>>(std::istream& is, Char_Array& ch)
 {
 	char c;
+	std::string s;
+	//char *str;
 	ch.amount_of_words = 0;
 	do {
-		is >> ch.ar[ch.amount_of_words++];
+		is >> s;
+		
+
+		ch +=s.c_str();
+		
+
+
+	/*	if (ch.amount_of_words + 1>MAXAMOUNT)
+		{
+			is.setstate(std::ios::failbit);
+			std::cerr << "failbit was set" << std::endl; ///??? no exception -> is.setstate(std::ios_base::failbit)
+			return is;
+		}
+		if (strlen(ch.ar[ch.amount_of_words]) > MAXLENGTH)
+		{
+			is.setstate(std::ios::failbit);
+			std::cerr << "failbit was set" << std::endl;
+			return is;
+
+		}
+		*/
+		ch.amount_of_words++;
+
 		c = is.get();
 		if (c == '\n') break;
 		if (c == ' ') continue;
@@ -81,85 +112,114 @@ std::istream& operator>>(std::istream& is,  Char_Array& ch)
 	return is;
 }
 
-int Char_Array::search(const char* word)
+int Char_Array::search(const char* word) const
 {
 
 	for (int i = 0; i < amount_of_words; i++)
 	{
-		if (strcmp(ar[i],word)==0)
+		if (strcmp(ar[i], word) == 0)
 		{
-			cout << "Position in array= " << i << endl;
 			return i;
 		}
 	}
 
-	return 100;
+	return -1;
 }
 
 
+void Char_Array::sort()
+{
+	for (int i = 0; i < amount_of_words - 1; i++)
+	{
+		for (int j = i + 1; j < amount_of_words; j++)
+		{
+			if (strcmp(ar[i], ar[j]) > 0)
+			{
+				char temp[MAXLENGTH];
+				strcpy(temp, ar[i]);
+				strcpy(ar[i], ar[j]);
+				strcpy(ar[j], temp);
+
+			}
+
+		}
+	}
+	return;
+}
+
+
+Char_Array& Char_Array::operator +=(const Char_Array &s)
+{
+	
+	/*if (amount_of_words + s.amount_of_words>MAXAMOUNT)
+	{
+		throw std::exception("Too much words\n");
+	}
+	*/
+	char **new_ar = new char*[amount_of_words + s.amount_of_words];
+
+	for (int i = 0; i <amount_of_words; i++)
+	{
+		new_ar[i] = new char[strlen(ar[i])];
+		strcpy(new_ar[i], ar[i]);
+	}
+
+	for (int i = 0; i < s.amount_of_words; i++)
+	{
+
+		new_ar[amount_of_words] = new char[strlen(s.ar[i])];
+		strcpy(new_ar[amount_of_words++], s.ar[i]);
+	}
+	ar = new_ar;
+	return *this;
+}
 
 Char_Array& Char_Array::operator +=(const char *s)
 {
 
-//	int qu = amount_of_words;
-	if ((amount_of_words + 1) > MAXAMOUNT)
+	//	int qu = amount_of_words;
+	char **new_ar = new char*[amount_of_words + 1];
+	for (int i = 0; i <amount_of_words; i++)
 	{
-		throw std::exception("Too much words");		
+		new_ar[i] = new char[strlen(ar[i])];
+		strcpy(new_ar[i], ar[i]);
 	}
-	strcpy_s(ar[amount_of_words++],s);
-	return *this;
-		
-}
 
+	new_ar[amount_of_words] = new char[strlen(s)];
+
+	strcpy(new_ar[amount_of_words++], s);
+	ar = new_ar;
+	return *this;
+
+}
 
 const char* Char_Array::operator[](int w) const
 {
 	if (w < 0 || w >= amount_of_words)
 	{
-		throw::exception("illegal index");
+		throw::exception("illegal index\n");
 
 	}
 	return ar[w];
 }
 
-
-Char_Array& Char_Array::operator () (const char c)
+Char_Array Char_Array::operator () (const char c)
 {
 	Char_Array ch;
-	ch.amount_of_words = 0;
+
 
 	for (int i = 0; i < amount_of_words; i++)
 	{
-		if (tolower(ar[i][0])==tolower(c))
+		if (tolower(ar[i][0]) == tolower(c))
 		{
-			strcpy_s(ch.ar[amount_of_words], ar[i]);
-			ch.amount_of_words++;
-			
+			ch += ar[i];
+
 		}
 	}
+
 	return ch;
 }
 
-
-
-
-
-void Char_Array::sort()
+Char_Array::~Char_Array()
 {
-	for (int i = 0; i < amount_of_words; i++)
-	{	
-		for (int j = i+1; j < amount_of_words-1; j++)
-		{
-			if (strcmp(ar[i], ar[j]) > 0)
-			{
-				char temp[MAXLENGTH];
-				strcpy_s(temp,ar[i] );
-				strcpy_s(ar[i], ar[j]);
-				strcpy_s(ar[j], temp);
-
-			}
-			
-		}
-	}
-	return;
 }
